@@ -38,7 +38,10 @@
 #include <vector>
 
 #include <fmt/format.h>
-#include <range/v3/all.hpp>
+#include <range/v3/action/join.hpp>
+#include <range/v3/core.hpp>
+#include <range/v3/view/iota.hpp>
+#include <range/v3/view/zip_with.hpp>
 
 #include "detail/range.hpp"
 
@@ -110,9 +113,73 @@ public:
     nodes.push_back( spacer );
   }
 
-  void solve()
+  bool solve()
   {
     auto l = 0;
+    std::vector<uint32_t> xs( items.size() );
+
+    while ( items[0].rlink != 0 )
+    {
+      /* choose next item i */
+      auto i = items[0].rlink;
+
+      /* cover i */
+      cover( i );
+      xs[l] = nodes[i].dlink;
+
+      auto next = false;
+      while ( !next )
+      {
+        if ( xs[l] == i )
+        {
+          uncover( i );
+          if ( l == 0 )
+            return false;
+          --l;
+          auto p = xs[l] - 1;
+          while ( p != xs[l] )
+          {
+            auto j = nodes[p].top;
+            if ( j <= 0 )
+            {
+              p = nodes[p].dlink;
+            }
+            else
+            {
+              uncover( j );
+              --p;
+            }
+          }
+          i = nodes[xs[l]].top;
+          xs[l] = nodes[xs[l]].dlink;
+        }
+        else
+        {
+          auto p = xs[l] + 1;
+          while ( p != xs[l] )
+          {
+            auto j = nodes[p].top;
+            if ( j <= 0 )
+            {
+              p = nodes[p].ulink;
+            }
+            else
+            {
+              cover( j );
+              ++p;
+            }
+          }
+          ++l;
+          next = true;
+        }
+      }
+    }
+
+    for ( auto i = 0; i < l; ++i )
+    {
+        std::cout << fmt::format( "[i] picked option with node {}", xs[i] ) << std::endl;
+    }
+    return true;
   }
 
   /* debug */
@@ -171,6 +238,82 @@ private:
 
     /* spacer */
     nodes[num_items + 1].top = 0;
+  }
+
+  inline void cover( uint32_t i )
+  {
+    auto p = nodes[i].dlink;
+    while ( p != i )
+    {
+      hide( p );
+      p = nodes[p].dlink;
+    }
+
+    /* dancing links */
+    const auto l = items[i].llink;
+    const auto r = items[i].rlink;
+    items[l].rlink = r;
+    items[r].llink = l;
+  }
+
+  inline void uncover( uint32_t i )
+  {
+    const auto l = items[i].llink;
+    const auto r = items[i].rlink;
+    items[l].rlink = i;
+    items[r].llink = i;
+    auto p = nodes[i].ulink;
+    while ( p != i )
+    {
+      unhide( p );
+      p = nodes[p].ulink;
+    }
+  }
+
+  inline void hide( uint32_t i )
+  {
+    auto q = i + 1;
+
+    while ( q != i )
+    {
+      auto x = nodes[q].top;
+      const auto u = nodes[q].ulink;
+      const auto d = nodes[q].dlink;
+      if ( x <= 0 )
+      {
+        q = u;
+      }
+      else
+      {
+        nodes[u].dlink = d;
+        nodes[d].ulink = u;
+        nodes[x].len--;
+        ++q;
+      }
+    }
+  }
+
+  inline void unhide( uint32_t i )
+  {
+    auto q = i - 1;
+
+    while ( q != i )
+    {
+      auto x = nodes[q].top;
+      const auto u = nodes[q].ulink;
+      const auto d = nodes[q].dlink;
+      if ( x <= 0 )
+      {
+        q = d;
+      }
+      else
+      {
+        nodes[u].dlink = q;
+        nodes[d].ulink = q;
+        nodes[x].len++;
+        --q;
+      }
+    }
   }
 
 private:

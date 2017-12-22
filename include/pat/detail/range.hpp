@@ -35,7 +35,12 @@
 #include <cstdint>
 #include <string>
 
-#include <range/v3/all.hpp>
+#include <range/v3/core.hpp>
+#include <range/v3/action/join.hpp>
+#include <range/v3/view/chunk.hpp>
+#include <range/v3/view/transform.hpp>
+
+#include <fmt/format.h>
 
 namespace pat
 {

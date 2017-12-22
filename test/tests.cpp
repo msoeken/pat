@@ -15,7 +15,9 @@ int main( int argc, char ** argv )
   solver.add_option( std::vector<uint32_t>{2, 7} );
   solver.add_option( std::vector<uint32_t>{4, 5, 7} );
 
-  solver.print_contents();
+  //solver.print_contents();
+
+  std::cout << solver.solve() << std::endl;
 
   return 0;
 }
