@@ -3,7 +3,7 @@
 
 #include <pat/pat.hpp>
 
-int main( int argc, char ** argv )
+int main( int argc, char** argv )
 {
   std::cout << "hello world" << std::endl;
 
@@ -17,7 +17,14 @@ int main( int argc, char ** argv )
 
   //solver.print_contents();
 
-  std::cout << solver.solve() << std::endl;
+  solver.solve( []( const auto& solution ) {
+    std::cout << "[i] solution:";
+    for ( auto option : solution )
+    {
+      std::cout << " " << option;
+    }
+    std::cout << std::endl;
+  } );
 
   return 0;
 }

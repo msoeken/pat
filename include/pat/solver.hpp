@@ -113,7 +113,8 @@ public:
     nodes.push_back( spacer );
   }
 
-  bool solve()
+  template<typename Fn>
+  void solve( Fn&& fn )
   {
     auto l = 0;
     std::vector<uint32_t> xs( items.size() );
@@ -134,7 +135,7 @@ public:
         {
           uncover( i );
           if ( l == 0 )
-            return false;
+            return;
           --l;
           auto p = xs[l] - 1;
           while ( p != xs[l] )
@@ -175,11 +176,11 @@ public:
       }
     }
 
-    for ( auto i = 0; i < l; ++i )
-    {
-        std::cout << fmt::format( "[i] picked option with node {}", xs[i] ) << std::endl;
-    }
-    return true;
+    std::vector<uint32_t> solution( l );
+    std::transform( xs.begin(), xs.begin() + l, solution.begin(), [this]( auto i ) { return option_index( i ); } );
+    fn( solution );
+
+    return;
   }
 
   /* debug */
@@ -314,6 +315,16 @@ private:
         --q;
       }
     }
+  }
+
+  inline uint32_t option_index( uint32_t i )
+  {
+    auto q = i - 1;
+    while ( nodes[q].top > 0 )
+    {
+      --q;
+    }
+    return -nodes[q].top;
   }
 
 private:
