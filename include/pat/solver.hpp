@@ -128,52 +128,45 @@ public:
       cover( i );
       xs[l] = nodes[i].dlink;
 
-      auto next = false;
-      while ( !next )
+      while ( xs[l] == i )
       {
-        if ( xs[l] == i )
+        uncover( i );
+        if ( l == 0 )
+          return;
+        --l;
+        auto p = xs[l] - 1;
+        while ( p != xs[l] )
         {
-          uncover( i );
-          if ( l == 0 )
-            return;
-          --l;
-          auto p = xs[l] - 1;
-          while ( p != xs[l] )
+          auto j = nodes[p].top;
+          if ( j <= 0 )
           {
-            auto j = nodes[p].top;
-            if ( j <= 0 )
-            {
-              p = nodes[p].dlink;
-            }
-            else
-            {
-              uncover( j );
-              --p;
-            }
+            p = nodes[p].dlink;
           }
-          i = nodes[xs[l]].top;
-          xs[l] = nodes[xs[l]].dlink;
+          else
+          {
+            uncover( j );
+            --p;
+          }
+        }
+        i = nodes[xs[l]].top;
+        xs[l] = nodes[xs[l]].dlink;
+      }
+
+      auto p = xs[l] + 1;
+      while ( p != xs[l] )
+      {
+        auto j = nodes[p].top;
+        if ( j <= 0 )
+        {
+          p = nodes[p].ulink;
         }
         else
         {
-          auto p = xs[l] + 1;
-          while ( p != xs[l] )
-          {
-            auto j = nodes[p].top;
-            if ( j <= 0 )
-            {
-              p = nodes[p].ulink;
-            }
-            else
-            {
-              cover( j );
-              ++p;
-            }
-          }
-          ++l;
-          next = true;
+          cover( j );
+          ++p;
         }
       }
+      ++l;
     }
 
     std::vector<uint32_t> solution( l );
