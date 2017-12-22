@@ -15,6 +15,7 @@ if(HAS_FCOLOR_DIAGNOSTICS)
   add_definitions(-fcolor-diagnostics)
 endif()
 
+add_subdirectory(lib)
 add_subdirectory(include)
 
 if(PAT_TEST)
