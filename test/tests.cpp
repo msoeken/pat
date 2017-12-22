@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include <pat/solver.hpp>
+#include <pat/pat.hpp>
 
 int main( int argc, char ** argv )
 {

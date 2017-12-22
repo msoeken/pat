@@ -24,12 +24,42 @@
  */
 
 /*!
-  \file pat.hpp
-  \brief Main header file for pat
+  \file range.hpp
+  \brief Range utilities
 
   \author Mathias Soeken
 */
 
 #pragma once
 
-#include "solver.hpp"
+#include <cstdint>
+#include <string>
+
+#include <range/v3/all.hpp>
+
+namespace pat
+{
+namespace detail
+{
+struct identity
+{
+  template<typename U>
+  constexpr auto operator()( U&& v ) const noexcept -> decltype( std::forward<U>( v ) )
+  {
+    return std::forward<U>( v );
+  }
+};
+
+template<typename Fn = identity>
+inline auto pad( Fn&& fn = Fn(), uint8_t width = 5 )
+{
+  return ranges::view::transform( [width, &fn]( auto i ) { return fmt::format( "{:>{}}", fn( i ), width ); } );
+}
+
+inline auto split_and_prefix( uint8_t n, const std::string& prefix, const std::string& suffix = "\n" )
+{
+  return ranges::view::chunk( n ) |
+         ranges::view::transform( [&prefix, &suffix]( const auto& c ) { return fmt::format( "{}{}{}", prefix, ranges::action::join( c ), suffix ); } );
+}
+}
+}
