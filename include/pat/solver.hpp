@@ -123,6 +123,7 @@ public:
 
     while ( true )
     {
+      /* all items have been chose */
       if ( items[0].rlink == 0 )
       {
         ++solutions;
@@ -140,46 +141,25 @@ public:
       cover( i );
       xs[l] = nodes[i].dlink;
 
-      while ( xs[l] == i )
+      while ( xs[l] == i ) /* we tried all options for item i */
       {
         uncover( i );
 
       check_last:
         if ( l == 0 )
           return solutions;
+
+        /* uncovers items in option */
         --l;
-        auto p = xs[l] - 1;
-        while ( p != xs[l] )
-        {
-          auto j = nodes[p].top;
-          if ( j <= 0 )
-          {
-            p = nodes[p].dlink;
-          }
-          else
-          {
-            uncover( j );
-            --p;
-          }
-        }
+        uncover_option( xs[l] );
+
+        /* next i */
         i = nodes[xs[l]].top;
         xs[l] = nodes[xs[l]].dlink;
       }
 
-      auto p = xs[l] + 1;
-      while ( p != xs[l] )
-      {
-        auto j = nodes[p].top;
-        if ( j <= 0 )
-        {
-          p = nodes[p].ulink;
-        }
-        else
-        {
-          cover( j );
-          ++p;
-        }
-      }
+      /* cover items in option */
+      cover_option( xs[l] );
       ++l;
     }
 
@@ -329,6 +309,42 @@ private:
         nodes[d].ulink = q;
         nodes[x].len++;
         --q;
+      }
+    }
+  }
+
+  inline void cover_option( uint32_t i )
+  {
+    auto p = i + 1;
+    while ( p != i )
+    {
+      auto j = nodes[p].top;
+      if ( j <= 0 )
+      {
+        p = nodes[p].ulink;
+      }
+      else
+      {
+        cover( j );
+        ++p;
+      }
+    }
+  }
+
+  inline void uncover_option( uint32_t i )
+  {
+    auto p = i - 1;
+    while ( p != i )
+    {
+      auto j = nodes[p].top;
+      if ( j <= 0 )
+      {
+        p = nodes[p].dlink;
+      }
+      else
+      {
+        uncover( j );
+        --p;
       }
     }
   }
