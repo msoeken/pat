@@ -1,4 +1,4 @@
-/* kitty: C++ dancing links solver
+/* pat: C++ dancing links solver
  * Copyright (C) 2017  EPFL
  *
  * Permission is hereby granted, free of charge, to any person

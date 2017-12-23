@@ -1,4 +1,4 @@
-/* kitty: C++ dancing links solver
+/* pat: C++ dancing links solver
  * Copyright (C) 2017  EPFL
  *
  * Permission is hereby granted, free of charge, to any person
@@ -44,6 +44,7 @@
 #include <range/v3/view/zip_with.hpp>
 
 #include "detail/range.hpp"
+#include "solution_callbacks.hpp"
 
 namespace pat
 {
@@ -113,16 +114,26 @@ public:
     nodes.push_back( spacer );
   }
 
-  template<typename Fn>
-  void solve( Fn&& fn )
+  template<typename Fn = decltype( just_count )>
+  uint32_t solve( Fn&& fn = just_count )
   {
-    auto l = 0;
+    uint32_t l = 0, i = 0, solutions = 0;
     std::vector<uint32_t> xs( items.size() );
 
-    while ( items[0].rlink != 0 )
+    while ( true )
     {
+      if ( items[0].rlink == 0 )
+      {
+        ++solutions;
+        if ( !fn( xs.cbegin(), xs.cbegin() + l ) )
+        {
+          return solutions;
+        }
+        goto check_last;
+      }
+
       /* choose next item i */
-      auto i = items[0].rlink;
+      i = items[0].rlink;
 
       /* cover i */
       cover( i );
@@ -131,8 +142,10 @@ public:
       while ( xs[l] == i )
       {
         uncover( i );
+
+      check_last:
         if ( l == 0 )
-          return;
+          return solutions;
         --l;
         auto p = xs[l] - 1;
         while ( p != xs[l] )
@@ -169,13 +182,21 @@ public:
       ++l;
     }
 
-    std::vector<uint32_t> solution( l );
-    std::transform( xs.begin(), xs.begin() + l, solution.begin(), [this]( auto i ) { return option_index( i ); } );
-    fn( solution );
-
-    return;
+    /* we'll never reach here */
+    return solutions;
   }
 
+  inline uint32_t option_index( uint32_t i )
+  {
+    auto q = i - 1;
+    while ( nodes[q].top > 0 )
+    {
+      --q;
+    }
+    return -nodes[q].top;
+  }
+
+#if 0
   /* debug */
 public:
   void print_contents( std::ostream& os = std::cout )
@@ -212,6 +233,7 @@ public:
             ranges::action::join )
        << std::endl;
   }
+#endif
 
 private:
   void initialize_items()
@@ -308,16 +330,6 @@ private:
         --q;
       }
     }
-  }
-
-  inline uint32_t option_index( uint32_t i )
-  {
-    auto q = i - 1;
-    while ( nodes[q].top > 0 )
-    {
-      --q;
-    }
-    return -nodes[q].top;
   }
 
 private:
