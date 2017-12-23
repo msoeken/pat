@@ -49,31 +49,32 @@
 namespace pat
 {
 
+struct item
+{
+  uint32_t index{};
+  uint32_t llink{};
+  uint32_t rlink{};
+};
+
+struct node
+{
+  union {
+    int32_t len{};
+    int32_t top;
+  };
+  uint32_t ulink{};
+  uint32_t dlink{};
+};
+
+template<typename ItemSelectionFn>
 class solver
 {
-private:
-  struct item
-  {
-    uint32_t index{};
-    uint32_t llink{};
-    uint32_t rlink{};
-  };
-
-  struct node
-  {
-    union {
-      int32_t len{};
-      int32_t top;
-    };
-    uint32_t ulink{};
-    uint32_t dlink{};
-  };
-
 public:
-  explicit solver( uint32_t num_items )
+  explicit solver( uint32_t num_items, ItemSelectionFn&& item_selection = ItemSelectionFn() )
       : items( num_items + 1 ),
         nodes( num_items + 2 ),
-        num_items( num_items )
+        num_items( num_items ),
+        item_selection( std::move( item_selection ) )
   {
     initialize_items();
   }
@@ -133,7 +134,7 @@ public:
       }
 
       /* choose next item i */
-      i = items[0].rlink;
+      i = item_selection( items, nodes );
 
       /* cover i */
       cover( i );
@@ -338,5 +339,7 @@ private:
 
   uint32_t num_items;
   int32_t m = 0;
+
+  ItemSelectionFn&& item_selection;
 };
 }

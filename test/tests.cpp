@@ -5,7 +5,7 @@
 
 void langford_pairs( unsigned n )
 {
-  pat::solver solver( 3 * n );
+  pat::default_solver solver( 3 * n );
 
   for ( auto i = 1u; i <= n; ++i )
   {
@@ -19,12 +19,12 @@ void langford_pairs( unsigned n )
     }
   }
 
-  std::cout << "found " << solver.solve( pat::stop_after( 10u, [n]( auto begin, auto end ) { assert( std::distance( begin, end ) == n ); } ) ) << " solutions" << std::endl;
+  std::cout << "found " << solver.solve() << " solutions" << std::endl;
 }
 
 int main( int argc, char** argv )
 {
-  pat::solver solver( 7 );
+  pat::default_solver solver( 7 );
   solver.add_option( std::vector<uint32_t>{3, 5} );
   solver.add_option( std::vector<uint32_t>{1, 4, 7} );
   solver.add_option( std::vector<uint32_t>{2, 3, 6} );
@@ -42,7 +42,7 @@ int main( int argc, char** argv )
     return true;
   } );
 
-  langford_pairs( 8u );
+  langford_pairs( 11u );
 
   return 0;
 }

@@ -24,15 +24,51 @@
  */
 
 /*!
-  \file pat.hpp
-  \brief Main header file for pat
+  \file solver.hpp
+  \brief Callback functions to access solutions
 
   \author Mathias Soeken
 */
 
 #pragma once
 
-#include "item_selection.hpp"
-#include "solution_callbacks.hpp"
+#include <climits>
+#include <vector>
+
 #include "solver.hpp"
-#include "solver_types.hpp"
+
+namespace pat
+{
+
+struct pick_first
+{
+  inline uint32_t operator()( const std::vector<item>& items, const std::vector<node>& nodes ) const
+  {
+    (void)nodes;
+    return items[0].rlink;
+  }
+};
+
+struct mrv_heuristic
+{
+  inline uint32_t operator()( const std::vector<item>& items, const std::vector<node>& nodes ) const
+  {
+    auto max = std::numeric_limits<int32_t>::max();
+    auto p = items[0].rlink;
+    auto i = 0;
+
+    while ( p != 0 )
+    {
+      const auto l = nodes[p].len;
+      if ( l < max )
+      {
+        max = l;
+        i = p;
+      }
+      p = items[p].rlink;
+    }
+
+    return i;
+  }
+};
+}

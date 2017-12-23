@@ -24,8 +24,8 @@
  */
 
 /*!
-  \file pat.hpp
-  \brief Main header file for pat
+  \file solver_types.hpp
+  \brief Pre-configured solvers
 
   \author Mathias Soeken
 */
@@ -33,6 +33,9 @@
 #pragma once
 
 #include "item_selection.hpp"
-#include "solution_callbacks.hpp"
 #include "solver.hpp"
-#include "solver_types.hpp"
+
+namespace pat
+{
+using default_solver = solver<mrv_heuristic>;
+}
