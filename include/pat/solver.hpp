@@ -240,7 +240,7 @@ private:
   void initialize_items()
   {
     /* initialize linked list of top items */
-    for ( auto i = 1; i <= num_items; ++i )
+    for ( auto i = 1u; i <= num_items; ++i )
     {
       items[i].index = i;
       items[i].llink = i - 1;

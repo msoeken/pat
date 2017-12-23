@@ -52,6 +52,8 @@ using solution_iterator = std::vector<uint32_t>::const_iterator;
 */
 inline bool just_count( solution_iterator begin, solution_iterator end )
 {
+  (void)begin;
+  (void)end;
   return true;
 }
 
@@ -62,6 +64,8 @@ inline bool just_count( solution_iterator begin, solution_iterator end )
 */
 inline bool stop_after_first( solution_iterator begin, solution_iterator end )
 {
+  (void)begin;
+  (void)end;
   return false;
 }
 
@@ -74,6 +78,8 @@ inline bool stop_after_first( solution_iterator begin, solution_iterator end )
 */
 inline void do_nothing( solution_iterator begin, solution_iterator end )
 {
+  (void)begin;
+  (void)end;
 }
 
 /*! \cond PRIVATE */
