@@ -70,10 +70,12 @@ template<typename ItemSelectionFn>
 class solver
 {
 public:
-  explicit solver( uint32_t num_items, ItemSelectionFn&& item_selection = ItemSelectionFn() )
-      : items( num_items + 1 ),
-        nodes( num_items + 2 ),
-        num_items( num_items ),
+  explicit solver( uint32_t primary_items, uint32_t secondary_items = 0u, ItemSelectionFn&& item_selection = ItemSelectionFn() )
+      : items( primary_items + secondary_items + 1 ),
+        nodes( primary_items + secondary_items + 2 ),
+        primary_items( primary_items ),
+        secondary_items( secondary_items ),
+        num_items( primary_items + secondary_items ),
         item_selection( std::move( item_selection ) )
   {
     initialize_items();
@@ -230,8 +232,13 @@ private:
       nodes[i].ulink = nodes[i].dlink = i;
     }
 
-    items[0].llink = num_items;
-    items[num_items].rlink = 0;
+    items[0].llink = primary_items;
+    items[primary_items].rlink = 0;
+    if ( secondary_items != 0 )
+    {
+      items[primary_items + 1].llink = num_items;
+      items[num_items].rlink = primary_items + 1;
+    }
 
     /* spacer */
     nodes[num_items + 1].top = 0;
@@ -353,6 +360,8 @@ private:
   std::vector<item> items;
   std::vector<node> nodes;
 
+  uint32_t primary_items;
+  uint32_t secondary_items;
   uint32_t num_items;
   int32_t m = 0;
 
