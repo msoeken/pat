@@ -1,9 +1,6 @@
 #include <catch.hpp>
 
 #include <cstdint>
-#include <iostream>
-
-#include <fmt/format.h>
 
 #include <pat/pat.hpp>
 
